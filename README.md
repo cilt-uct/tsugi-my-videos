@@ -1,2 +1,2 @@
-# tsugi-my-videos
-A page to introduce my videos to Amathuba sites and help with DIY recordings.
+# Tsugi: My videos
+A page to introduce My Videos to Amathuba sites and help with DIY recordings.
