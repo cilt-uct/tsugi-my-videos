@@ -24,7 +24,7 @@ $user_role = $LAUNCH->ltiRawParameter('ext_d2l_role', 'none');
 $_SESSION['userid'] = $user_id;
 $_SESSION['user_role'] = strtolower($user_role);
 
-if (!(is_valid_user_user($user_id, $user_role))) {
+if (!(is_valid_user($user_id, $user_role))) {
     $_SESSION['is_valid_user'] = false;
     header( 'Location: '.addSession('oc_setup.php') ) ;
     exit();
