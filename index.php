@@ -20,14 +20,16 @@ $debug = false;
 $allLTIParams = $LAUNCH->ltiRawPostArray();
 $site_id = $LAUNCH->ltiRawParameter('context_id','none');
 $user_id = $LAUNCH->ltiRawParameter('ext_d2l_username', 'none');
+$user_role = $LAUNCH->ltiRawParameter('ext_d2l_role', 'none');
 $_SESSION['userid'] = $user_id;
+$_SESSION['user_role'] = strtolower($user_role);
 
-if (is_admin_user($user_id)) {
-    $_SESSION['is_admin'] = true;
+if (!(is_valid_user_user($user_id, $user_role))) {
+    $_SESSION['is_valid_user'] = false;
     header( 'Location: '.addSession('oc_setup.php') ) ;
     exit();
 } else {
-    $_SESSION['is_admin'] = false;
+    $_SESSION['is_valid_user'] = true;
     $fullurl = $tool['middleware_opencasturl'] .$user_id . '/personal';
     $personalSeriesDetails = fetchWithBasicAuth($fullurl, $tool['middleware_username'], $tool['middleware_password']);
 

@@ -18,7 +18,7 @@ $debug = false;
 $OUTPUT->header();
 include 'tool-header.html';
 
-if (!$_SESSION['is_admin']) {
+if ($_SESSION['is_valid_user']) {
 
     $d2l_params = $_SESSION['d2l_launch_params'];
 
@@ -149,7 +149,7 @@ $OUTPUT->topNav($menu);
                 </div>
             </div>
 
-            <?php if (!$_SESSION['is_admin']) { ?>
+            <?php if ($_SESSION['is_valid_user']) { ?>
                 <form class="form-inline text-center" method="post" target="_self" id="metadata">
                     <button id="btnAccept" class="btn btn-success" type="submit" name="activate"><i class="fa fa-check"></i> Activate My Videos</button>
                     <span id="info" class="text-info" style="display:none;"><small>This might take a couple of seconds.</small></span>

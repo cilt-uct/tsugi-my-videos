@@ -1,9 +1,43 @@
 <?php
 include 'tool-config_dist.php';
 
-function is_admin_user($cn) {
-    return preg_match('/^admin[a-z]{2,}$/', $cn) === 1;
+function is_valid_user($eid, $role) {
+    $eid = strtolower($eid);
+    $role = strtolower($role);
+    $invalid_roles = ['guest', 'admin', 'super administrator', 'thirdparty', 'staff'];
+
+    // Rule 1: Disallow usernames that start with "admin"
+    if (preg_match('/^admin[a-z]{2,}$/', $eid)) {
+        return false;
+    }
+
+    // Rule 2: Disallow users with certain roles
+    if (in_array($role, $invalid_roles)) {
+        return false;
+    }
+
+    // Rule 3: Disallow test student accounts
+    if ($role === 'student') {
+         // Block common test student accounts
+        $test_patterns = [
+            '/test/',                          // matches any 'test' or 'TEST'
+            '/one_button_studio/',             // special test account with student role
+            '/student\d+/',                    // e.g. student001 or STUDENT001
+            '/^[a-z]+_[a-z]+$/',               // matches name_surname
+            '/^[a-z]+\.[a-z]+$/',              //  matches name.surname
+        ];
+
+        foreach ($test_patterns as $pattern) {
+            if (preg_match($pattern, $eid)) {
+                return false;
+            }
+        }
+
+    }
+
+    return true;
 }
+
 
 // fetch data from middleware using basic auth
 function fetchWithBasicAuth($url, $username, $password) {
