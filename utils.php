@@ -4,7 +4,7 @@ include 'tool-config_dist.php';
 function is_valid_user($eid, $role) {
     $eid = strtolower($eid);
     $role = strtolower($role);
-    $invalid_roles = ['guest', 'admin', 'super administrator', 'thirdparty', 'staff'];
+    $invalid_roles = ['guest', 'admin', 'super administrator', 'thirdparty'];
 
     // Rule 1: Disallow usernames that start with "admin"
     if (preg_match('/^admin[a-z]{2,}$/', $eid)) {
