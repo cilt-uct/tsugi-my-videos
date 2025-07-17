@@ -37,7 +37,6 @@ if (!(is_valid_user($user_id, $user_role))) {
     if (isset($personalSeriesDetails['status']) && $personalSeriesDetails['status'] === 'success') {
         // Proceed only if personal series exists
         if (!empty($personalSeriesDetails['data']['data'])) {
-            $username = $personalSeriesDetails ['data']['data'][0]['contributors'][0];
             $series_id = $personalSeriesDetails ['data']['data'][0]['identifier'];
       
             $OUTPUT->header();
@@ -45,17 +44,17 @@ if (!(is_valid_user($user_id, $user_role))) {
             $OUTPUT->topNav($menu);
 
             $parms = array(
-                'user_id' => $username,
+                'user_id' => $user_id,
                 'context_id' => $LAUNCH->ltiRawParameter('context_id'),
                 'resource_link_id' => $LAUNCH->link->id,
                 'custom_tool' => $LAUNCH->ltiRawParameter('custom_tool'),
                 'custom_sid' => $series_id,
                 'custom_type' => $LAUNCH->ltiRawParameter('custom_type'),
                 'link_id' => $LAUNCH->ltiRawParameter('ext_d2l_link_id'),
-                'role' => $LAUNCH->ltiRawParameter('ext_d2l_role')
+                'role' => $LAUNCH->ltiRawParameter('ext_d2l_role'),
+                'ext_submit' => 'Launch'
             );
 
-            $parms['ext_submit'] = 'Launch';
             $parms = LTI::signParameters($parms, $tool['opencast_ltiurl'], 'POST', $tool['opencast_ltikey'], $tool['opencast_ltisecret']);
             $content = LTI::postLaunchHTML($parms, $tool['opencast_ltiurl'], $debug, false);
             echo $content;
@@ -64,19 +63,20 @@ if (!(is_valid_user($user_id, $user_role))) {
             $OUTPUT->footerEnd();
 
         } else {
+            // create a new series if it doesn't exist
             $_SESSION['d2l_launch_params'] = $allLTIParams;
             header( 'Location: '.addSession('oc_setup.php') ) ;	
             exit();
         }
     } else {
+        $errorDetails = 'Failed to fetch personal series for user ' .$user_id;
+        notify_admin($user_id, $errorDetails);
 
         $OUTPUT->header();
         $OUTPUT->bodyStart();
         $OUTPUT->topNav($menu);
         $OUTPUT->flashMessages();
-        $_SESSION['error'] = 'You do not have access to view this page.';
-        // TODO: Send an email to admin to fix for user
-    
+        $_SESSION['error'] = 'Something went wrong.Please contact cilt-helpdesk@uct.ac.za for assistance.';
         $OUTPUT->footerStart();
         $OUTPUT->footerEnd();
     }

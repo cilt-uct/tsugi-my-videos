@@ -111,3 +111,19 @@ function postWithBasicAuth($url, $username, $password, $postData = []) {
 
     return $data;
 }
+
+function notify_admin($username, $errorDetails) {
+    $to = $tool['notification-list'];
+    $subject = 'My Videos Error Alert';
+    $message = "An error occurred during personal series fetch or creation.\n\n"
+             . "User: {$username}\n"
+             . "Timestamp: " . date('Y-m-d H:i:s') . "\n"
+             . "Details: {$errorDetails}\n\n"
+             . "Please investigate the issue.";
+
+    $headers = "From: noreply@tsugi.uct.ac.za\r\n";
+    $headers .= "Content-Type: text/plain; charset=UTF-8\r\n";
+
+    mail($to, $subject, $message, $headers);
+}
+

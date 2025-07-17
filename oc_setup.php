@@ -14,7 +14,6 @@ use \Tsugi\Core\Settings;
 $menu = false;
 $debug = false;
 
-// Start of the output
 $OUTPUT->header();
 include 'tool-header.html';
 
@@ -50,10 +49,16 @@ if ($_SESSION['is_valid_user']) {
                 echo $content;
                 exit;
             } else {
+                $errorDetails = 'Series creation returned no data for user ' .$_SESSION['userid'];
+                notify_admin($_SESSION['userid'], $errorDetails);
+
                 $_SESSION['error'] = 'Something went wrong. Please contact cilt-helpdesk@uct.ac.za for assistance.';
             }
         } else {
-            $_SESSION['error'] = 'Series creation failed. Please contact cilt-helpdesk@uct.ac.za for assistance.';
+            $errorDetails = 'Failed to create personal series for user ' .$_SESSION['userid'];
+            notify_admin($_SESSION['userid'], $errorDetails);
+
+            $_SESSION['error'] = 'Something went wrong. Please contact cilt-helpdesk@uct.ac.za for assistance.';
         }
     }
 }
@@ -151,7 +156,7 @@ $OUTPUT->topNav($menu);
 
             <?php if ($_SESSION['is_valid_user']) { ?>
                 <form class="form-inline text-center" method="post" target="_self" id="metadata">
-                    <button id="btnAccept" class="btn btn-success" type="submit" name="activate"><i class="fa fa-check"></i> Activate My Videos</button>
+                    <button id="activate" class="btn btn-success" type="submit" name="activate"><i class="fa fa-check"></i> Activate My Videos</button>
                     <span id="info" class="text-info" style="display:none;"><small>This might take a couple of seconds.</small></span>
                     <div class="col-xs-12" id="message"></div>
                 </form>
