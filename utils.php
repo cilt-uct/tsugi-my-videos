@@ -41,75 +41,190 @@ function is_valid_user($eid, $role) {
 
 // fetch data from middleware using basic auth
 function fetchWithBasicAuth($url, $username, $password) {
-    $ch = curl_init();
+    $maxRetries = 3;
+    $retryDelay = 5;
+    $retriesUsed = 0;
 
-    // Set cURL options
-    curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, [
-        'Authorization: Basic ' . base64_encode($username . ':' . $password)
-    ]);
+    while ($retriesUsed < $maxRetries) {
+        $ch = curl_init();
 
-    // Execute and get the response
-    $response = curl_exec($ch);
+        // Set cURL options
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Authorization: Basic ' . base64_encode($username . ':' . $password)
+        ]);
 
-    // Check for errors
-    if ($response === false) {
-        $error = curl_error($ch);
+        // Execute and get the response
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+        // Check for errors
+        if ($response === false) {
+            $error = curl_error($ch);
+            curl_close($ch);
+            return [
+                'success' => false,
+                'httpCode' => $httpCode,
+                'error' => "cURL error: $error"
+            ];
+        }
+
         curl_close($ch);
-        throw new Exception('cURL Error: ' . $error);
-    }
 
-    curl_close($ch);
+        if ($httpCode >= 500 && $httpCode < 600) {
+            // Server error - retry
+            if ($retriesUsed < $maxRetries) {
+                $retriesUsed++;    
+                sleep($retryDelay);
+                continue;
+            } else {
+                return [
+                    'success' => false,
+                    'httpCode' => $httpCode,
+                    'error' => "Server returned HTTP $httpCode after $maxRetries retries.",
+                    'retriesUsed' => $retriesUsed 
+               ];      
+            }
+        }
 
-    // Decode JSON response into an associative array
-    $data = json_decode($response, true);
+        $data = json_decode($response, true);
 
-    // Check for JSON decoding errors
-    if (json_last_error() !== JSON_ERROR_NONE) {
-        throw new Exception('JSON Decode Error: ' . json_last_error_msg(). "\n\nResponse:\n" . $response);
-    }
+        // Check for JSON decoding errors
+        if (json_last_error() !== JSON_ERROR_NONE) {
+	    return [
+                'success' => false,
+                'httpCode' => $httpCode,
+                'error' => 'JSON decode error: ' . json_last_error_msg(),
+                'rawResponse' => $response,
+                'retriesUsed' => $retriesUsed
+            ];
+        }
 
-    return $data;
+        if ($httpCode >= 400) {
+            return [
+                'success' => false,
+                'httpCode' => $httpCode,
+                'error' => "API returned HTTP $httpCode",
+                'data' => $data,
+                'retriesUsed' => $retriesUsed
+            ];
+        }
+
+        return [
+            'success' => true,
+            'httpCode' => $httpCode,
+            'data' => $data,
+            'retriesUsed' => $retriesUsed
+        ];
+    } 
 }
 
 // send data to middleware using basic auth
 function postWithBasicAuth($url, $username, $password, $postData = []) {
-    $ch = curl_init();
+    $maxRetries = 3;
+    $retryDelay = 5
+    $retriesUsed = 0;
 
-    $headers = [
-        'Authorization: Basic ' . base64_encode($username . ':' . $password),
-        'Content-Type: application/json'
-    ];
+    while ($retriesUsed < $maxRetries) {
+        $ch = curl_init();
 
-    // Convert post data to JSON
-    $jsonData = json_encode($postData);
+        $headers = [
+            'Authorization: Basic ' . base64_encode($username . ':' . $password),
+            'Content-Type: application/json'
+        ];
 
-    curl_setopt_array($ch, [
-        CURLOPT_URL => $url,
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_POST => true,
-        CURLOPT_POSTFIELDS => $jsonData,
-        CURLOPT_HTTPHEADER => $headers
-    ]);
+        // Convert post data to JSON
+        $jsonData = json_encode($postData);
 
-    $response = curl_exec($ch);
+        curl_setopt_array($ch, [
+            CURLOPT_URL => $url,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_POST => true,
+            CURLOPT_POSTFIELDS => $jsonData,
+            CURLOPT_HTTPHEADER => $headers
+        ]);
 
-    if ($response === false) {
-        $error = curl_error($ch);
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        
+        if ($response === false) {
+            $error = curl_error($ch);
+            curl_close($ch);
+            return [
+                'success' => false,
+                'httpCode' => $httpCode,
+                'error' => "cURL error: $error",
+                'retriesUsed' => $retriesUsed
+            ];
+        }
+
         curl_close($ch);
-        throw new Exception('cURL Error: ' . $error);
+
+        if (in_array($httpCode, [500, 502, 503, 504])) {
+            if ($retriesUsed < $maxRetries) {
+                $retriesUsed++;
+                sleep($retryDelay);
+                continue;
+            } else {
+                return [
+                    'success' => false,
+                    'httpCode' => $httpCode,
+                    'error' => "Server returned HTTP $httpCode after $retriesUsed retries.",
+                    'retriesUsed' => $retriesUsed
+                ];
+            }
+        }
+
+        $data = json_decode($response, true);
+
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            return [
+                'success' => false,
+                'httpCode' => $httpCode,
+                'error' => 'JSON decode error: ' . json_last_error_msg(),
+                'rawResponse' => $response,
+                'retriesUsed' => $retriesUsed
+            ];
+        }
+
+        return [
+            'success' => true,
+            'httpCode' => $httpCode,
+            'data' => $data,
+            'retriesUsed' => $retriesUsed
+        ];
     }
+}
 
-    curl_close($ch);
+function showError($message) {
+    global $OUTPUT, $menu;
 
-    $data = json_decode($response, true);
+    $OUTPUT->header();
+    $OUTPUT->bodyStart();
+    $OUTPUT->topNav($menu);
+    $OUTPUT->flashMessages();
 
-    if (json_last_error() !== JSON_ERROR_NONE) {
-        throw new Exception('JSON Decode Error: ' . json_last_error_msg());
-    }
+    echo "<div class='alert alert-danger' role='alert'>" . htmlspecialchars($message) . "</div>";
 
-    return $data;
+    $OUTPUT->footerStart();
+    $OUTPUT->footerEnd();
+    exit();
+}
+
+function notify_admin($tool, $username, $errorDetails) {
+    $to = $tool['notification_list'];
+    $subject = 'My Videos Error Alert';
+    $message = "An error occurred on My Videos tool in Amathuba.\n\n"
+             . "User: {$username}\n"
+             . "Timestamp: " . date('Y-m-d H:i:s') . "\n"
+             . "Details: {$errorDetails}\n\n"
+             . "Please investigate the issue.";
+
+    $headers = "From: noreply@tsugi.uct.ac.za\r\n";
+    $headers .= "Content-Type: text/plain; charset=UTF-8\r\n";
+
+    mail($to, $subject, $message, $headers);
 }
 
 function notify_admin($username, $errorDetails) {

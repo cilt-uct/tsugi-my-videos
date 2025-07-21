@@ -1,9 +1,8 @@
 <?php
+
 require_once "../config.php";
 include 'tool-config_dist.php';
 require_once "utils.php";
-
-session_start();
 
 use \Tsugi\Util\U;
 use \Tsugi\Util\LTI;
@@ -21,6 +20,7 @@ $allLTIParams = $LAUNCH->ltiRawPostArray();
 $site_id = $LAUNCH->ltiRawParameter('context_id','none');
 $user_id = $LAUNCH->ltiRawParameter('ext_d2l_username', 'none');
 $user_role = $LAUNCH->ltiRawParameter('ext_d2l_role', 'none');
+
 $_SESSION['userid'] = $user_id;
 $_SESSION['user_role'] = strtolower($user_role);
 
@@ -32,12 +32,10 @@ if (!(is_valid_user($user_id, $user_role))) {
     $_SESSION['is_valid_user'] = true;
     $fullurl = $tool['middleware_opencasturl'] .$user_id . '/personal';
     $personalSeriesDetails = fetchWithBasicAuth($fullurl, $tool['middleware_username'], $tool['middleware_password']);
-
-    // Check if personal series API call was successful
-    if (isset($personalSeriesDetails['status']) && $personalSeriesDetails['status'] === 'success') {
-        // Proceed only if personal series exists
-        if (!empty($personalSeriesDetails['data']['data'])) {
-            $series_id = $personalSeriesDetails ['data']['data'][0]['identifier'];
+    
+    if ($personalSeriesDetails['success'] && $personalSeriesDetails['httpCode'] == 200) {
+        if (!empty($personalSeriesDetails['data']['data']['data'])) {
+            $series_id = $personalSeriesDetails ['data']['data']['data'][0]['identifier'];
       
             $OUTPUT->header();
             $OUTPUT->bodyStart();
@@ -69,15 +67,22 @@ if (!(is_valid_user($user_id, $user_role))) {
             exit();
         }
     } else {
-        $errorDetails = 'Failed to fetch personal series for user ' .$user_id;
-        notify_admin($user_id, $errorDetails);
+	    
+        notify_admin($tool, $user_id, "API error response: " . json_encode($personalSeriesDetails));
+
+        if ($personalSeriesDetails['httpCode'] >= 500) {
+            $_SESSION['error'] = "My Videos is currently unavailable. Please try again later.";
+        } else {
+            $_SESSION['error'] = "An unexpected error occurred. Please try again later.";
+        }
 
         $OUTPUT->header();
         $OUTPUT->bodyStart();
         $OUTPUT->topNav($menu);
         $OUTPUT->flashMessages();
-        $_SESSION['error'] = 'Something went wrong.Please contact cilt-helpdesk@uct.ac.za for assistance.';
         $OUTPUT->footerStart();
         $OUTPUT->footerEnd();
+
+	    exit;
     }
 }

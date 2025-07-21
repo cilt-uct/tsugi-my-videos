@@ -23,13 +23,13 @@ if ($_SESSION['is_valid_user']) {
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['activate'])) {
 
-        $fullurl = $tool['middleware_opencasturl'].'/personal';
+        $fullurl = $tool['middleware_opencasturl'].'personal';
 
         $createPersonalSeries = postWithBasicAuth($fullurl, $tool['middleware_username'], $tool['middleware_password'], ['eid' => $_SESSION['userid']]);
 
-        if (isset($createPersonalSeries['status']) && $createPersonalSeries['status'] === 'success') {
-            if (!empty($createPersonalSeries['data'])) {
-                $new_series_id = $createPersonalSeries['data']['identifier'];
+        if ($createPersonalSeries['success'] && $createPersonalSeries['httpCode'] == 200) {
+            if (!empty($createPersonalSeries['data']['data'])) {
+                $new_series_id = $createPersonalSeries['data']['data']['identifier'];
 
                 // Launch My Videos
                 $parms = array(
@@ -155,7 +155,7 @@ $OUTPUT->topNav($menu);
             </div>
 
             <?php if ($_SESSION['is_valid_user']) { ?>
-                <form class="form-inline text-center" method="post" target="_self" id="metadata">
+                <form class="form-inline text-center" method="post" target="_self" id="frmActivate">
                     <button id="activate" class="btn btn-success" type="submit" name="activate"><i class="fa fa-check"></i> Activate My Videos</button>
                     <span id="info" class="text-info" style="display:none;"><small>This might take a couple of seconds.</small></span>
                     <div class="col-xs-12" id="message"></div>

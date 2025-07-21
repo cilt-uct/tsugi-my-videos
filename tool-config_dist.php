@@ -11,7 +11,7 @@ if ((basename(__FILE__, '.php') != 'tool-config') && (file_exists('tool-config.p
 $tool = array();
 $tool['debug'] = FALSE;
 $tool['active'] = TRUE; # if false will show coming soon page
-$tool['notification-list'] = 'notification-list';
+$tool['notification_list'] = 'notification-list';
 
 // middleware settings
 $tool['middleware_opencasturl'] = 'middleware_url';
