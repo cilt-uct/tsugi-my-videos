@@ -45,21 +45,17 @@ function fetchWithBasicAuth($url, $username, $password) {
     $retryDelay = 5;
     $retriesUsed = 0;
 
-    while ($retriesUsed < $maxRetries) {
+    while ($retriesUsed< $maxRetries) {
         $ch = curl_init();
-
-        // Set cURL options
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
             'Authorization: Basic ' . base64_encode($username . ':' . $password)
         ]);
 
-        // Execute and get the response
         $response = curl_exec($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
-        // Check for errors
         if ($response === false) {
             $error = curl_error($ch);
             curl_close($ch);
@@ -71,9 +67,7 @@ function fetchWithBasicAuth($url, $username, $password) {
         }
 
         curl_close($ch);
-
         if ($httpCode >= 500 && $httpCode < 600) {
-            // Server error - retry
             if ($retriesUsed < $maxRetries) {
                 $retriesUsed++;    
                 sleep($retryDelay);
@@ -83,21 +77,19 @@ function fetchWithBasicAuth($url, $username, $password) {
                     'success' => false,
                     'httpCode' => $httpCode,
                     'error' => "Server returned HTTP $httpCode after $maxRetries retries.",
-                    'retriesUsed' => $retriesUsed 
+                    'retries' => $retriesUsed 
                ];      
             }
         }
 
         $data = json_decode($response, true);
-
-        // Check for JSON decoding errors
         if (json_last_error() !== JSON_ERROR_NONE) {
-	    return [
+	        return [
                 'success' => false,
                 'httpCode' => $httpCode,
                 'error' => 'JSON decode error: ' . json_last_error_msg(),
                 'rawResponse' => $response,
-                'retriesUsed' => $retriesUsed
+                'retries' => $retriesUsed
             ];
         }
 
@@ -107,7 +99,7 @@ function fetchWithBasicAuth($url, $username, $password) {
                 'httpCode' => $httpCode,
                 'error' => "API returned HTTP $httpCode",
                 'data' => $data,
-                'retriesUsed' => $retriesUsed
+                'retries' => $retriesUsed
             ];
         }
 
@@ -115,7 +107,7 @@ function fetchWithBasicAuth($url, $username, $password) {
             'success' => true,
             'httpCode' => $httpCode,
             'data' => $data,
-            'retriesUsed' => $retriesUsed
+            'retries' => $retriesUsed
         ];
     } 
 }
@@ -123,10 +115,10 @@ function fetchWithBasicAuth($url, $username, $password) {
 // send data to middleware using basic auth
 function postWithBasicAuth($url, $username, $password, $postData = []) {
     $maxRetries = 3;
-    $retryDelay = 5
+    $retryDelay = 5;
     $retriesUsed = 0;
 
-    while ($retriesUsed < $maxRetries) {
+    while($retriesUsed < $maxRetries) {
         $ch = curl_init();
 
         $headers = [
@@ -147,11 +139,11 @@ function postWithBasicAuth($url, $username, $password, $postData = []) {
 
         $response = curl_exec($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        
+
         if ($response === false) {
             $error = curl_error($ch);
             curl_close($ch);
-            return [
+	        return [
                 'success' => false,
                 'httpCode' => $httpCode,
                 'error' => "cURL error: $error",
@@ -161,6 +153,7 @@ function postWithBasicAuth($url, $username, $password, $postData = []) {
 
         curl_close($ch);
 
+        // Retry on transient server errors
         if (in_array($httpCode, [500, 502, 503, 504])) {
             if ($retriesUsed < $maxRetries) {
                 $retriesUsed++;
@@ -179,7 +172,7 @@ function postWithBasicAuth($url, $username, $password, $postData = []) {
         $data = json_decode($response, true);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
-            return [
+	        return [
                 'success' => false,
                 'httpCode' => $httpCode,
                 'error' => 'JSON decode error: ' . json_last_error_msg(),
@@ -188,6 +181,7 @@ function postWithBasicAuth($url, $username, $password, $postData = []) {
             ];
         }
 
+        //return $data;
         return [
             'success' => true,
             'httpCode' => $httpCode,
@@ -195,21 +189,6 @@ function postWithBasicAuth($url, $username, $password, $postData = []) {
             'retriesUsed' => $retriesUsed
         ];
     }
-}
-
-function showError($message) {
-    global $OUTPUT, $menu;
-
-    $OUTPUT->header();
-    $OUTPUT->bodyStart();
-    $OUTPUT->topNav($menu);
-    $OUTPUT->flashMessages();
-
-    echo "<div class='alert alert-danger' role='alert'>" . htmlspecialchars($message) . "</div>";
-
-    $OUTPUT->footerStart();
-    $OUTPUT->footerEnd();
-    exit();
 }
 
 function notify_admin($tool, $username, $errorDetails) {
@@ -226,19 +205,3 @@ function notify_admin($tool, $username, $errorDetails) {
 
     mail($to, $subject, $message, $headers);
 }
-
-function notify_admin($username, $errorDetails) {
-    $to = $tool['notification-list'];
-    $subject = 'My Videos Error Alert';
-    $message = "An error occurred during personal series fetch or creation.\n\n"
-             . "User: {$username}\n"
-             . "Timestamp: " . date('Y-m-d H:i:s') . "\n"
-             . "Details: {$errorDetails}\n\n"
-             . "Please investigate the issue.";
-
-    $headers = "From: noreply@tsugi.uct.ac.za\r\n";
-    $headers .= "Content-Type: text/plain; charset=UTF-8\r\n";
-
-    mail($to, $subject, $message, $headers);
-}
-
