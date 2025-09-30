@@ -1,11 +1,11 @@
 <?php
 
 $REGISTER_LTI2 = array(
-"name" => "My Videos",
-"FontAwesome" => "fa-video-camera",
-"short_name" => "My Videos",
-"description" => "Shows a welcome page on Amathuba, to describe the benefits of having a My Videos tool on the user's homepage.",
-"messages" => array("launch"),
+    "name" => "My Videos",
+    "FontAwesome" => "fa-video-camera",
+    "short_name" => "My Videos",
+    "description" => "Shows a welcome page on Amathuba, to describe the benefits of having a My Videos tool on the user's homepage.",
+    "messages" => array("launch"),
     "privacy_level" => "public",
     "license" => "Apache",
     "languages" => array(
@@ -20,7 +20,7 @@ $REGISTER_LTI2 = array(
         // no placements
     ),
     "screen_shots" => array(
-        // No screenshots
+        "images/tsugi-my-videos-screenshot-001.jpg",
     )
 );
 
