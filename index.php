@@ -32,11 +32,11 @@ if (!(is_valid_user($user_id, $user_role))) {
     $_SESSION['is_valid_user'] = true;
     $fullurl = $tool['middleware_opencasturl'] .$user_id . '/personal';
     $personalSeriesDetails = fetchWithBasicAuth($fullurl, $tool['middleware_username'], $tool['middleware_password']);
-    
+
     if ($personalSeriesDetails['success'] && $personalSeriesDetails['httpCode'] == 200) {
         if (!empty($personalSeriesDetails['data']['data']['data'])) {
             $series_id = $personalSeriesDetails ['data']['data']['data'][0]['identifier'];
-      
+
             $OUTPUT->header();
             $OUTPUT->bodyStart();
             $OUTPUT->topNav($menu);
@@ -54,8 +54,8 @@ if (!(is_valid_user($user_id, $user_role))) {
             );
 
             $parms = LTI::signParameters($parms, $tool['opencast_ltiurl'], 'POST', $tool['opencast_ltikey'], $tool['opencast_ltisecret']);
-            $content = LTI::postLaunchHTML($parms, $tool['opencast_ltiurl'], $debug, false);
-            echo $content;
+	    $content = LTI::postLaunchHTML($parms, $tool['opencast_ltiurl'], $debug, false);
+	    echo $content;
 
             $OUTPUT->footerStart();
             $OUTPUT->footerEnd();
@@ -63,11 +63,11 @@ if (!(is_valid_user($user_id, $user_role))) {
         } else {
             // create a new series if it doesn't exist
             $_SESSION['d2l_launch_params'] = $allLTIParams;
-            header( 'Location: '.addSession('oc_setup.php') ) ;	
-            exit();
+            header( 'Location: '.addSession('oc_setup.php') ) ;
+	    exit();
         }
     } else {
-	    
+
         notify_admin($tool, $user_id, "API error response: " . json_encode($personalSeriesDetails));
 
         if ($personalSeriesDetails['httpCode'] >= 500) {

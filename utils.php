@@ -6,7 +6,7 @@ function is_valid_user($eid, $role) {
     $role = strtolower($role);
     $invalid_roles = ['guest', 'admin', 'super administrator', 'thirdparty'];
 
-    // Rule 1: Disallow usernames that start with "admin"
+    // Rule 1: Disallow users with admin accounts
     if (preg_match('/^admin[a-z]{2,}$/', $eid)) {
         return false;
     }
@@ -75,7 +75,7 @@ function fetchWithBasicAuth($url, $username, $password) {
         if ($httpCode >= 500 && $httpCode < 600) {
             // Server error - retry
             if ($retriesUsed < $maxRetries) {
-                $retriesUsed++;    
+                $retriesUsed++;
                 sleep($retryDelay);
                 continue;
             } else {
@@ -83,8 +83,8 @@ function fetchWithBasicAuth($url, $username, $password) {
                     'success' => false,
                     'httpCode' => $httpCode,
                     'error' => "Server returned HTTP $httpCode after $maxRetries retries.",
-                    'retriesUsed' => $retriesUsed 
-               ];      
+                    'retriesUsed' => $retriesUsed
+               ];
             }
         }
 
@@ -117,7 +117,7 @@ function fetchWithBasicAuth($url, $username, $password) {
             'data' => $data,
             'retriesUsed' => $retriesUsed
         ];
-    } 
+    }
 }
 
 // send data to middleware using basic auth
@@ -147,7 +147,7 @@ function postWithBasicAuth($url, $username, $password, $postData = []) {
 
         $response = curl_exec($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        
+
         if ($response === false) {
             $error = curl_error($ch);
             curl_close($ch);

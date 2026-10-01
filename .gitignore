@@ -1,3 +1,4 @@
-.DS_Store
+cache/*.php
+old
 *.swp
-
+tool-config.php

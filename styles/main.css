@@ -1,13 +1,53 @@
-/* background-image: linear-gradient(to right top, #d16ba5, #c777b9, #ba83ca, #aa8fd8, #9a9ae1, #8aa7ec, #79b3f4, #69bff8, #52cffe, #41dfff, #46eefa, #5ffbf1); */
-
-.bgnew {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: -1;
+.section {
+  color: #494c4e;
+   font-family: "Lato", "Lucida Sans Unicode", "Lucida Grande", sans-serif;
 }
+
+.d2l-typography {
+ color: var(--d2l-color-ferrite);
+ display: block;
+ font-family: "Lato", "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+ font-size: .95rem;
+ font-weight: 400;
+ letter-spacing: .01rem;
+ line-height: 1.4rem;
+}
+
+.section h1, h2, h3, h4, h5, h6 {
+    color: rgb(0, 97, 149);
+    text-align: center;
+    font-weight: 700;
+}
+
+.panel img {
+  width: 120px;
+  height: 120px;
+}
+
+.panel-heading.terms-heading {
+  background: linear-gradient(to right, #1f376a  10%, #005A9C 40%, #4682B4 80%);
+  border-bottom: 1px solid #ddd;
+  color: white;
+}
+
+.btn-activate {
+  border-radius: 20px !important;
+  background-color: #17a687;
+  color: white;
+  line-height: 2 !important;
+  width: fit-content;
+  font-weight: 700 !important;
+  padding: 7px 11px 7px 11px;
+  font-size: 16px !important;
+}
+
+.d2l-typography .d2l-heading-1 {
+    font-size: 2rem !important;
+    font-weight: 400 !important;
+    line-height: 2.4rem !important;
+    margin: 1.5rem 0 1.5rem 0 !important;
+}
+
 
 .splash-content header {
     color: #fff;
@@ -18,95 +58,86 @@
 }
 
 section > div.row {
-  margin-left: 0px;
-  margin-right: 0px;
+    margin-left: 0px;
+    margin-right: 0px;
 }
 
 section h3 {
-  margin-top: 0px;
+    margin-top: 0px;
+    margin-bottom: 0px;
 }
 
 .container {
-  padding: 0;
-  margin: 5px auto;
+    padding: 0;
+    margin: 5px auto;
 }
 
-.site-footer {
-  padding: 2em 0;
-  text-align:center;
+.panel{
+    border: none;
+    box-shadow: none !important;
 }
 
-.site-footer p {
-  color: inherit;
-  font-size: 0.8em;
-  color: #c4c4c4;
+.panel-blue {
+    background-color: #1f376a !important;
+    color: white !important;
 }
 
-#metadata div.row {
-  margin-bottom: 0.8em;
+.panel-body.terms-body {
+  padding-top: 5px !important;
 }
 
-#metadata div.col-md-3 label {
-  margin-top: 0.5em;
+.agree {
+  margin-bottom: 0 !important;
 }
 
-#metadata .row >div:first-child label {
-  display: block;
-  text-align: right;
+.mb30 { 
+    margin-bottom: 30px; 
 }
 
-#metadata input[type=text].form-control, #metadata textarea.form-control {
-  width: 80%;
+.terms {
+    color: #f37067;
 }
 
-#metadata .checkbox input[type=checkbox],
-#metadata .checkbox-inline input[type=checkbox],
-#metadata .radio input[type=radio],
-#metadata .radio-inline input[type=radio] {
-  margin-top: 7px;
+.myvideos {
+  color: #1f376a;
 }
 
-#metadata select.form-control {
-  width: 200px;
+.d2l-typography .d2l-htmlblock h4 {
+    font-size: 1.5em;
+    line-height: 27px;
+    margin: 19.92px 0;
+    font-weight: 700;
 }
 
-#metadata textarea.form-control {
-  min-height: 50px;
+#modalIcon {
+    padding-bottom: 1%;
 }
 
-#metadata button {
-  margin: 1em 1em 1em 0;
+.d2l-dialog-flex {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden !important;
+    position: absolute;
+    width: 100% !important;
 }
 
-#metadata button i {
-    display: inline-block;
-    margin-right: 6px;
+.d2l-dialog-title {
+    align-self: flex-start;
+    margin: -.25rem .25rem .25rem 0;
+    position: relative;
+    width: 100%;
 }
 
-#metadata li {
-  padding-left: 1em;
-  font-size: 0.8em;
+.d2l-dialog-body {
+    -webkit-overflow-scrolling: touch;
+    flex-grow: 2;
+    overflow: auto;
+    position: relative;
 }
 
-#metadata ol ol {
-  padding-left: 2em;
-  font-size: 1.2em;
+.d2l-textblock {
+    margin-bottom: 0;
+    word-wrap: break-word;
 }
-
-#metadata ol ol > li {
-  list-style-type: lower-roman;
-}
-
-#metadata p {
-  font-size: 0.9em;
-  padding: 0.6em;
-}
-
-.container_iframe .bg-info {
-  background-color: rgba(117,202,235, 0.6);
-}
-
-.container_iframe .bg-info p {
-  color: #333;
-}
-

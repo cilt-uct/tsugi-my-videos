@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="uuid-342e198a-4d68-40ab-9358-a05903fa1886" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1707 77.94">
+  <defs>
+    <style>
+      .uuid-09f61517-1257-4951-9ea4-87d34de47f16 {
+        fill: url(#uuid-ca758102-edcb-455a-8fa4-bc19351d15fd);
+      }
+
+      .uuid-08da90d6-7b57-4edd-b369-4bdd2fcf69ee {
+        letter-spacing: 0em;
+      }
+
+      .uuid-0ee74b6b-8fc8-403d-bc30-35bb7b7bbc49 {
+        letter-spacing: -.05em;
+      }
+
+      .uuid-802719ae-c042-4d13-917a-3d8b95a90a4f {
+        fill: #fff;
+        font-family: Montserrat-Bold, Montserrat;
+        font-size: 50px;
+        font-weight: 700;
+      }
+    </style>
+    <linearGradient id="uuid-ca758102-edcb-455a-8fa4-bc19351d15fd" data-name="New Gradient Swatch copy" x1="0" y1="38.97" x2="1707" y2="38.97" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#003660"/>
+      <stop offset="1" stop-color="#009ada"/>
+    </linearGradient>
+  </defs>
+  <g id="uuid-b2ddeb08-10e6-4abc-a742-2c23dcdaa31d" data-name="Layer 1">
+    <rect class="uuid-09f61517-1257-4951-9ea4-87d34de47f16" width="1707" height="77.94"/>
+    <text class="uuid-802719ae-c042-4d13-917a-3d8b95a90a4f" transform="translate(684.53 55.57)"><tspan class="uuid-0ee74b6b-8fc8-403d-bc30-35bb7b7bbc49" x="0" y="0">T</tspan><tspan x="28.15" y="0">e</tspan><tspan class="uuid-08da90d6-7b57-4edd-b369-4bdd2fcf69ee" x="59.7" y="0">r</tspan><tspan x="81.05" y="0">ms of Use</tspan></text>
+  </g>
+</svg>
